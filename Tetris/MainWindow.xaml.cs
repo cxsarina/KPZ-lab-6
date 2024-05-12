@@ -138,18 +138,23 @@ namespace Tetris
         }
         private void DrawBlock(Block block)
         {
-            foreach(Position p in block.TilePositions())
+            foreach (Position p in block.TilePositions())
             {
-                imageControls[p.Row,p.Column].Opacity = 1;
+                imageControls[p.Row, p.Column].Opacity = 1;
                 if (option.Theme == 0)
                 {
                     imageControls[p.Row, p.Column].Source = tileImages1[block.Id];
                 }
-                if(option.Theme == 1)
+                if (option.Theme == 1)
                 {
                     imageControls[p.Row, p.Column].Source = tileImages2[block.Id];
                 }
             }
+        }
+        private Block CreateNewBlock()
+        {
+            BlockType type = (BlockType)new Random().Next(0, 7);
+            return Block.CreateBlock(type);
         }
         private void DrawNextBlock(BlockQueue blockQueue)
         {
@@ -241,10 +246,12 @@ namespace Tetris
         }
         private async Task GameLoop()
         {
+            gameState.CurrentBlock = CreateNewBlock();
+
             Draw(gameState);
             while (!gameState.GameOver)
             {
-                if(option.Difficult == 0) 
+                if (option.Difficult == 0)
                 {
                     delay = Math.Max(minDelay, maxDelay - (gameState.Score / 3));
                 }
@@ -252,7 +259,7 @@ namespace Tetris
                 {
                     delay = Math.Max(minDelay, maxDelay - gameState.Score);
                 }
-                if(option.Difficult == 2)
+                if (option.Difficult == 2)
                 {
                     delay = Math.Max(minDelay, maxDelay - (gameState.Score * delayDecrease));
                 }
