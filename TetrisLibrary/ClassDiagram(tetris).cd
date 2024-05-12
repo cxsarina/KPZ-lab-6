@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TetrisLibrary.Block">
+    <Position X="11.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACCAAAAAIAIBAAAAAAAAEAAAAAGAAIAAAAABAAAAAA=</HashCode>
+      <FileName>Block.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.BlockQueue">
+    <Position X="14.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAQAAABABAA=</HashCode>
+      <FileName>BlockQueue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.GameGrid">
+    <Position X="18" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EADAAAAAAAIAEEAAiAAAAEAAAAAACAAAAAAAAAgAAAA=</HashCode>
+      <FileName>GameGrid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.GameState">
+    <Position X="6.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABIigAEAAAgAAAgkAIAAAAEAAAAAAAgAAgAIECiAAAA=</HashCode>
+      <FileName>GameState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.IBlock">
+    <Position X="6.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>IBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.JBlock">
+    <Position X="8.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>JBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.LBlock">
+    <Position X="12.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>LBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.OBlock">
+    <Position X="16.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>OBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.Options">
+    <Position X="16.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAQAAAAAAAAAAAAAAAEAAAAgAAAAAA=</HashCode>
+      <FileName>Options.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.Position">
+    <Position X="9.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Position.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.SBlock">
+    <Position X="14.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>SBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.TBlock">
+    <Position X="18.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>TBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.User">
+    <Position X="8" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAEAAAAAAAAAAAAQAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisLibrary.ZBlock">
+    <Position X="10.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAABAAAAAA=</HashCode>
+      <FileName>ZBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
