@@ -9,6 +9,30 @@ namespace TetrisLibrary
 {
     public class GameState
     {
+        private List<IGameObserver> observers = new List<IGameObserver>();
+
+        public void Attach(IGameObserver observer)
+        {
+            observers.Add(observer);
+        }
+        public void Detach(IGameObserver observer)
+        {
+            observers.Remove(observer);
+        }
+        public void NotifyRoundStarted()
+        {
+            foreach (var observer in observers)
+            {
+                observer.RoundStarted();
+            }
+        }
+        public void NotifyGameOver()
+        {
+            foreach (var observer in observers)
+            {
+                observer.GameOver();
+            }
+        }
         private Block currentBlock;
         public Block CurrentBlock
         {
