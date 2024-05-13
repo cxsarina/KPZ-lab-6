@@ -8,25 +8,7 @@ namespace TetrisLibrary
 {
     public class GameManager
     {
-        private static GameManager instance;
-        private GameState gameState;
-
-        private GameManager()
-        {
-            gameState = new GameState();
-        }
-
-        public static GameManager Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new GameManager();
-                }
-                return instance;
-            }
-        }
+        private static GameState gameState = new GameState();
 
         public GameState GameState => gameState;
     }
