@@ -20,7 +20,18 @@ namespace Tetris
     public partial class MainWindow : Window
     {
         private static MainWindow instance;
-      
+        public static MainWindow Instance 
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new MainWindow();
+                }
+                return instance;
+            }
+        }
+       
         public List<User> userList = new List<User>();
         public string filePath = "..\\..\\..\\..\\ScoreTable.txt";
         public List<User> updatedUserList = new List<User>();
@@ -76,25 +87,47 @@ namespace Tetris
         private readonly int maxDelay = 500;
         private readonly int minDelay = 100;
         private readonly int delayDecrease = 2;
+        private readonly string backgroundImagePath = ".\\Assets\\tetris_background.png";
+        private readonly string backgroundImage2Path = ".\\Assets\\tetris_background2.png";
+        private readonly string scoreLabelTextEn = "Score:";
+        private readonly string scoreLabelTextUa = "Рахунок:";
+        private readonly string nextButtonTextEn = "Next";
+        private readonly string nextButtonTextUa = "Наступна";
+        private readonly string holdButtonTextEn = "Hold";
+        private readonly string holdButtonTextUa = "Утримувати";
+        private readonly string finalScoreLabelTextEn = "Score:";
+        private readonly string finalScoreLabelTextUa = "Рахунок:";
+        private readonly string playAgainButtonTextEn = "Play Again";
+        private readonly string playAgainButtonTextUa = "Спробувати ще раз";
+        private readonly string highScoreTableButtonTextEn = "High Score Table";
+        private readonly string highScoreTableButtonTextUa = "Рекордна Таблиця";
+        private readonly string returnToMenuButtonTextEn = "Return To Menu";
+        private readonly string returnToMenuButtonTextUa = "Повернення до меню";
         private GameState gameState = new GameState();
+        
         private void ChangeFormBackgroundImage()
         {
-            string imagePath = ".\\Assets\\tetris_background.png";
+            string imagePath = backgroundImagePath;
             ImageBrush imageBrush = new ImageBrush();
             imageBrush.ImageSource = new BitmapImage(new Uri(imagePath));
             this.Background = imageBrush;
         }
         private void ChangeFormBackgroundImage2()
         {
-            string imagePath1 = ".\\Assets\\tetris_background2.png";
+            string imagePath1 = backgroundImage2Path;
             ImageBrush imageBrush1 = new ImageBrush();
             imageBrush1.ImageSource = new BitmapImage(new Uri(imagePath1));
             this.Background = imageBrush1;
         }
-        private MainWindow()
+        private void InitializeGame()
         {
             InitializeComponent();
             WindowState = WindowState.Maximized;
+        }
+        private MainWindow()
+        {
+            instance = this; 
+            InitializeGame();
             imageControls = SetupGameCanvas(gameState.GameGrid);
         }
         public static MainWindow GetInstance()
@@ -230,11 +263,11 @@ namespace Tetris
                 DrawHeldBlock(gameState.HeldBlock);
                 if (option.Language == 0)
                 {
-                    ScoreText.Text = $"Score: {gameState.Score}";
+                    ScoreText.Text = $"{scoreLabelTextEn} {gameState.Score}";
                 }
                 if (option.Language == 1)
                 {
-                    ScoreText.Text = $"Рахунок: {gameState.Score}";
+                    ScoreText.Text = $"{scoreLabelTextUa} {gameState.Score}";
                 }
             }
             if(option.Ghost_Block == 1)
@@ -245,11 +278,11 @@ namespace Tetris
                 DrawHeldBlock(gameState.HeldBlock);
                 if (option.Language == 0)
                 {
-                    ScoreText.Text = $"Score: {gameState.Score}";
+                    ScoreText.Text = $"{scoreLabelTextEn} {gameState.Score}";
                 }
                 if (option.Language == 1)
                 {
-                    ScoreText.Text = $"Рахунок: {gameState.Score}";
+                    ScoreText.Text = $"{scoreLabelTextUa} {gameState.Score}";
                 }
             }
            
@@ -280,7 +313,7 @@ namespace Tetris
             GameOverMenu.Visibility = Visibility.Visible;
             if (option.Language == 0)
             {
-                FinalScoreText.Text = $"Score: {gameState.Score}";
+                FinalScoreText.Text = $"{scoreLabelTextEn}  {gameState.Score}";
                 if(option.Difficult == 0 ) 
                 {
                     users.Score_Easy = gameState.Score;
@@ -375,7 +408,7 @@ namespace Tetris
             }
             if (option.Language == 1)
             {
-                FinalScoreText.Text = $"Рахунок: {gameState.Score}";
+                FinalScoreText.Text = $"{scoreLabelTextUa}  {gameState.Score}";
                 if (option.Difficult == 0)
                 {
                     users.Score_Easy = gameState.Score;
@@ -556,35 +589,35 @@ namespace Tetris
             }
             if (option.Theme == 0)
             {
-                Uri imageUri = new Uri("F:\\university\\KPZ-lab-6\\Tetris\\Assets\\tetris_background2.png");
+                Uri imageUri = new Uri(backgroundImagePath);
                 ImageBrush imageBrush = new ImageBrush(new BitmapImage(imageUri));
                 this.Background = imageBrush;
             }
             if(option.Theme == 1)
             {
-                Uri imageUri = new Uri("F:\\university\\KPZ-lab-6\\Tetris\\Assets\\tetris_background.png");
+                Uri imageUri = new Uri(backgroundImage2Path);
                 ImageBrush imageBrush = new ImageBrush(new BitmapImage(imageUri));
                 this.Background = imageBrush;
             }
             if(option.Language == 0)
             {
-                ScoreText.Text = "Score:";
-                Next.Text = "Next";
-                Hold.Text = "Hold";
-                FinalScoreText.Text = "Score:";
-                PlayAgain.Content = "Play Again";
-                HighScoreTable.Content = "High Score Table";
-                ReturnToMenu.Content = "Return To Menu";
+                ScoreText.Text = scoreLabelTextEn;
+                Next.Text = nextButtonTextEn;
+                Hold.Text = holdButtonTextEn;
+                FinalScoreText.Text = finalScoreLabelTextEn;
+                PlayAgain.Content = playAgainButtonTextEn;
+                HighScoreTable.Content = highScoreTableButtonTextEn;
+                ReturnToMenu.Content = returnToMenuButtonTextEn;
             }
             if(option.Language == 1)
             {
-                ScoreText.Text = "Рахунок:";
-                Next.Text = "Наступна";
-                Hold.Text = "Утримувати";
-                FinalScoreText.Text = "Рахунок:";
-                PlayAgain.Content = "Спробувати ще раз";
-                HighScoreTable.Content = "Рекордна Таблиця";
-                ReturnToMenu.Content = "Повернення до меню";
+                ScoreText.Text = scoreLabelTextUa;
+                Next.Text = nextButtonTextUa;
+                Hold.Text = holdButtonTextUa;
+                FinalScoreText.Text = finalScoreLabelTextUa;
+                PlayAgain.Content = playAgainButtonTextUa;
+                HighScoreTable.Content = highScoreTableButtonTextUa;
+                ReturnToMenu.Content = returnToMenuButtonTextUa;
             }
         }
     }
