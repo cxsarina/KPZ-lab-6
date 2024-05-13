@@ -13,7 +13,7 @@ namespace TetrisLibrary
         public Block CurrentBlock
         {
             get => currentBlock;
-            private set
+            set
             {
                 currentBlock = value;
                 currentBlock.Reset();
