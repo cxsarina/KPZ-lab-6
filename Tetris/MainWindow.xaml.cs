@@ -19,6 +19,8 @@ namespace Tetris
 {
     public partial class MainWindow : Window
     {
+        private static MainWindow instance;
+      
         public List<User> userList = new List<User>();
         public string filePath = "..\\..\\..\\..\\ScoreTable.txt";
         public List<User> updatedUserList = new List<User>();
@@ -89,11 +91,19 @@ namespace Tetris
             imageBrush1.ImageSource = new BitmapImage(new Uri(imagePath1));
             this.Background = imageBrush1;
         }
-        public MainWindow()
+        private MainWindow()
         {
             InitializeComponent();
             WindowState = WindowState.Maximized;
             imageControls = SetupGameCanvas(gameState.GameGrid);
+        }
+        public static MainWindow GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new MainWindow();
+            }
+            return instance;
         }
         private Image[,] SetupGameCanvas(GameGrid grid)
         {
