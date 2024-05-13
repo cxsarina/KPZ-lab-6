@@ -26,6 +26,7 @@ namespace TetrisLibrary
         {
             return IsInside(r, c) && grid[r, c] == 0;
         }
+
         public bool IsRowFull(int r)
         {
             for (int c = 0; c < Columns; c++)
