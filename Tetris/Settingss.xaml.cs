@@ -26,7 +26,7 @@ namespace Tetris
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             Menu menu = new Menu();
-            MainWindow main = new MainWindow();
+            MainWindow main = MainWindow.Instance;
             HighScoreTablee highScoreTablee = new HighScoreTablee();
             main.option = options;
             menu.settings = options;
@@ -126,29 +126,11 @@ namespace Tetris
         }
         private void ComboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ComboBox1.SelectedIndex == 0) 
-            {
-                options.Language = 0;
-            }
-            else if(ComboBox1.SelectedIndex == 1)
-            {
-                options.Language = 1;
-            }
+            options.Language = ComboBox1.SelectedIndex;
         }
         private void ComboBox2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboBox2.SelectedIndex == 0)
-            {
-                options.Difficult = 0;
-            }
-            else if(ComboBox2.SelectedIndex == 1)
-            {
-                options.Difficult = 1;
-            }
-            else if (ComboBox2.SelectedIndex == 2)
-            {
-                options.Difficult = 2;
-            }
+            options.Difficult = ComboBox2.SelectedIndex;
         }
 
         private void CheckBox1_Unchecked(object sender, RoutedEventArgs e)
