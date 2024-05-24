@@ -9,31 +9,14 @@ namespace TetrisLibrary
 {
     public class GameState
     {
-        private List<IGameObserver> observers = new List<IGameObserver>();
-
-        public void Attach(IGameObserver observer)
-        {
-            observers.Add(observer);
-        }
-        public void Detach(IGameObserver observer)
-        {
-            observers.Remove(observer);
-        }
-        public void NotifyRoundStarted()
-        {
-            foreach (var observer in observers)
-            {
-                observer.RoundStarted();
-            }
-        }
-        public void NotifyGameOver()
-        {
-            foreach (var observer in observers)
-            {
-                observer.GameOver();
-            }
-        }
+        private readonly List<IGameObserver> observers = new List<IGameObserver>();
         private Block currentBlock;
+        public GameGrid GameGrid { get; }
+        public BlockQueue BlockQueue { get; }
+        public bool GameOver { get; private set; }
+        public int Score { get; private set; }
+        public Block HeldBlock { get; private set; }
+        public bool CanHold { get; private set; }
         public Block CurrentBlock
         {
             get => currentBlock;
@@ -41,7 +24,7 @@ namespace TetrisLibrary
             {
                 currentBlock = value;
                 currentBlock.Reset();
-                for(int i = 0; i < 2; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     currentBlock.Move(1, 0);
                     if (!BlockFits())
@@ -51,13 +34,6 @@ namespace TetrisLibrary
                 }
             }
         }
-        public GameGrid GameGrid { get;}
-        public BlockQueue BlockQueue { get;}
-        public bool GameOver { get; private set; }
-        public int Score { get; private set; }
-        public Block HeldBlock { get; private set; }
-        public bool CanHold { get; private set; }
-
         public GameState()
         {
             GameGrid = new GameGrid(22, 10);
@@ -65,83 +41,138 @@ namespace TetrisLibrary
             CurrentBlock = BlockQueue.GetAndUpdate();
             CanHold = true;
         }
+        public void Attach(IGameObserver observer)
+        {
+            if (observer == null) throw new ArgumentNullException(nameof(observer));
+            observers.Add(observer);
+        }
+
+        public void Detach(IGameObserver observer)
+        {
+            if (observer == null) throw new ArgumentNullException(nameof(observer));
+            observers.Remove(observer);
+        }
+
+        public void NotifyRoundStarted()
+        {
+            foreach (var observer in observers)
+            {
+                observer.RoundStarted();
+            }
+        }
+
+        public void NotifyGameOver()
+        {
+            foreach (var observer in observers)
+            {
+                observer.GameOver();
+            }
+        }
+
         private bool BlockFits()
         {
-            foreach (Position p in CurrentBlock.TilePositions())
+            foreach (var position in CurrentBlock.TilePositions())
             {
-                if(!GameGrid.IsEmpty(p.Row, p.Column))
+                if (!GameGrid.IsEmpty(position.Row, position.Column))
                 {
                     return false;
                 }
             }
             return true;
         }
+
         public void HoldBlock()
         {
-            if (!CanHold)
-            {
-                return;
-            }
-            if(HeldBlock == null)
+            if (!CanHold) return;
+
+            if (HeldBlock == null)
             {
                 HeldBlock = CurrentBlock;
                 CurrentBlock = BlockQueue.GetAndUpdate();
             }
             else
             {
-                Block tmp = CurrentBlock;
+                var temp = CurrentBlock;
                 CurrentBlock = HeldBlock;
-                HeldBlock = tmp;
+                HeldBlock = temp;
             }
+
             CanHold = false;
         }
-        public void RotateBlockCW() 
+
+        public void RotateBlockCW()
         {
-            CurrentBlock.RotateCW();
-            if(!BlockFits())
-            {
-                CurrentBlock.RotateCCW();
-            }
+            RotateBlock(() => CurrentBlock.RotateCW(), () => CurrentBlock.RotateCCW());
         }
-        public void RotateBlockCWW()
+
+        public void RotateBlockCCW()
         {
-            CurrentBlock.RotateCCW();
-            if(!BlockFits())
-            {
-                CurrentBlock.RotateCW();
-            }
+            RotateBlock(() => CurrentBlock.RotateCCW(), () => CurrentBlock.RotateCW());
         }
+
         public void MoveBlockLeft()
         {
-            CurrentBlock.Move(0, -1);
-            if (!BlockFits())
-            {
-                CurrentBlock.Move(0, 1);
-            }
+            MoveBlock(0, -1);
         }
+
         public void MoveBlockRight()
         {
-            CurrentBlock.Move(0, 1);
+            MoveBlock(0, 1);
+        }
+
+        public void MoveBlockDown()
+        {
+            MoveBlock(1, 0);
             if (!BlockFits())
             {
-                CurrentBlock.Move(0, -1);
+                CurrentBlock.Move(-1, 0);
+                PlaceBlock();
             }
         }
+
+        public void DropBlock()
+        {
+            CurrentBlock.Move(BlockDropDistance(), 0);
+            PlaceBlock();
+        }
+
+        private void RotateBlock(Action rotate, Action undoRotate)
+        {
+            rotate();
+            if (!BlockFits())
+            {
+                undoRotate();
+            }
+        }
+
+        private void MoveBlock(int rowOffset, int colOffset)
+        {
+            CurrentBlock.Move(rowOffset, colOffset);
+            if (!BlockFits())
+            {
+                CurrentBlock.Move(-rowOffset, -colOffset);
+            }
+        }
+
         private bool IsGameOver()
         {
             return !(GameGrid.IsRowEmpty(0) && GameGrid.IsRowEmpty(1));
         }
+
         private void PlaceBlock()
         {
-            foreach(Position p in CurrentBlock.TilePositions())
+            foreach (var position in CurrentBlock.TilePositions())
             {
-                GameGrid[p.Row, p.Column] = CurrentBlock.Id;
+                GameGrid[position.Row, position.Column] = CurrentBlock.Id;
             }
+
             Score += 4;
             Score += GameGrid.ClearFullRows() * 10;
+
             if (IsGameOver())
             {
                 GameOver = true;
+                NotifyGameOver();
             }
             else
             {
@@ -149,37 +180,26 @@ namespace TetrisLibrary
                 CanHold = true;
             }
         }
-        public void MoveBlockDown()
+
+        private int TileDropDistance(Position position)
         {
-            CurrentBlock.Move(1, 0);
-            if (!BlockFits())
+            int dropDistance = 0;
+            while (GameGrid.IsEmpty(position.Row + dropDistance + 1, position.Column))
             {
-                CurrentBlock.Move(-1, 0);
-                PlaceBlock();
+                dropDistance++;
             }
+            return dropDistance;
         }
-        private int TileDropDistance(Position p)
-        {
-            int drop = 0;
-            while (GameGrid.IsEmpty(p.Row + drop + 1, p.Column)) 
-            {
-                drop ++;
-            }
-            return drop;
-        }
+
         public int BlockDropDistance()
         {
-            int drop = GameGrid.Rows;
-            foreach(Position p in CurrentBlock.TilePositions())
+            int minDropDistance = GameGrid.Rows;
+
+            foreach (var position in CurrentBlock.TilePositions())
             {
-                drop = System.Math.Min(drop, TileDropDistance(p));
+                minDropDistance = Math.Min(minDropDistance, TileDropDistance(position));
             }
-            return drop;
-        }
-        public void DropBlock()
-        {
-            CurrentBlock.Move(BlockDropDistance(), 0);
-            PlaceBlock();
+            return minDropDistance;
         }
     }
 }
