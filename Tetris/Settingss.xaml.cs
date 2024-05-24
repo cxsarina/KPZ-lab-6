@@ -49,80 +49,79 @@ namespace Tetris
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            InitializeComboBoxes();
+            SetLanguageOptions();
+            SetDifficultyOptions();
+            SetGhostBlockOption();
+        }
+
+        private void InitializeComboBoxes()
+        {
             ComboBox comboBox1 = (ComboBox)FindName("ComboBox1");
             ComboBox1.Items.Clear();
             ComboBox comboBox2 = (ComboBox)FindName("ComboBox2");
             ComboBox2.Items.Clear();
-            if (options.Language == 0)
+        }
+
+        private void SetLanguageOptions()
+        {
+            switch (options.Language)
             {
-                ComboBox1.SelectedIndex = 0;
-                label1.Content = "Settings:";
-                label2.Content = "Program Style:";
-                CheckBox1.Content = "With Ghost-Block";
-                label4.Content = "Language:";
-                label5.Content = "Difficulty:";
-                Save.Content = "Save";
-                Default.Content = "Default";
-                Flowers.Content = "Flowers";
-                List<string> newItems = new List<string>
-                {
-                    "English",
-                    "Ukrainian"
-                };
-                comboBox1.ItemsSource = newItems;
-                List<string> newItems1 = new List<string>
-                {
-                    "Easy",
-                    "Normal",
-                    "Hard"
-                };
-                comboBox2.ItemsSource = newItems1;
+                case 0:
+                    SetLanguageToEnglish();
+                    break;
+                case 1:
+                    SetLanguageToUkrainian();
+                    break;
             }
-            if (options.Language == 1)
+        }
+
+        private void SetLanguageToEnglish()
+        {
+            ComboBox1.SelectedIndex = 0;
+            label1.Content = "Settings:";
+            label2.Content = "Program Style:";
+            CheckBox1.Content = "With Ghost-Block";
+            label4.Content = "Language:";
+            label5.Content = "Difficulty:";
+            Save.Content = "Save";
+            Default.Content = "Default";
+            Flowers.Content = "Flowers";
+
+            ComboBox1.ItemsSource = new List<string> { "English", "Ukrainian" };
+            ComboBox2.ItemsSource = new List<string> { "Easy", "Normal", "Hard" };
+        }
+
+        private void SetLanguageToUkrainian()
+        {
+            ComboBox1.SelectedIndex = 1;
+            label1.Content = "Налаштування:";
+            label2.Content = "Тема програми:";
+            CheckBox1.Content = "Блок-Підказка";
+            label4.Content = "Мова:";
+            label5.Content = "Складність:";
+            Save.Content = "Зберегти";
+            Default.Content = "Базова";
+            Flowers.Content = "Квіткова";
+
+            ComboBox1.ItemsSource = new List<string> { "Англійська", "Українська" };
+            ComboBox2.ItemsSource = new List<string> { "Легко", "Нормально", "Важко" };
+        }
+
+        private void SetDifficultyOptions()
+        {
+            ComboBox2.SelectedIndex = options.Difficult switch
             {
-                ComboBox1.SelectedIndex = 1;
-                label1.Content = "Налаштування:";
-                label2.Content = "Тема програми:";
-                CheckBox1.Content = "Блок-Підказка";
-                label4.Content = "Мова:";
-                label5.Content = "Складність:";
-                Save.Content = "Зберегти";
-                Default.Content = "Базова";
-                Flowers.Content = "Квіткова";
-                List<string> newItems = new List<string>
-                {
-                    "Англійська",
-                    "Українська"
-                };
-                comboBox1.ItemsSource = newItems;
-                List<string> newItems1 = new List<string>
-                {
-                    "Легко",
-                    "Нормально",
-                    "Важко"
-                };
-                comboBox2.ItemsSource = newItems1;
-            }
-            if(options.Difficult == 0)
-            {
-                ComboBox2.SelectedIndex = 0;
-            }
-            if(options.Difficult == 1)
-            {
-                ComboBox2.SelectedIndex = 1;
-            }
-            if(options.Difficult == 2)
-            {
-                ComboBox2.SelectedIndex = 2;
-            }
-            if(options.Ghost_Block == 0)
-            {
-                CheckBox1.IsChecked = true;
-            }
-            if (options.Ghost_Block == 1)
-            {
-                CheckBox1.IsChecked = false;
-            }
+                0 => 0,
+                1 => 1,
+                2 => 2,
+                _ => 0
+            };
+        }
+
+        private void SetGhostBlockOption()
+        {
+            CheckBox1.IsChecked = options.Ghost_Block == 0;
         }
         private void ComboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
