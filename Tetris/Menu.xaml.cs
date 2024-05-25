@@ -86,7 +86,7 @@ namespace Tetris
         private void User_Click(object sender, RoutedEventArgs e)
         {
             user.Name = User_Text.Text;
-            MainWindow main = new MainWindow();
+            MainWindow main = MainWindow.Instance;
             main.option = settings;
             main.users = user;
             main.Show();

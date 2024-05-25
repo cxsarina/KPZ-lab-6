@@ -39,56 +39,57 @@ namespace Tetris
         public User users;
         public int delay;
         Menu menu = new Menu();
-        private readonly ImageSource[] tileImages1 = new ImageSource[]
+
+        private static ImageSource[] LoadImageSources(string basePath, string[] fileNames)
         {
-            new BitmapImage(new Uri("Assets/TileEmpty.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileCyan.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileBlue.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileOrange.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileYellow.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileGreen.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TilePurple.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileRed.png", UriKind.Relative))
-        };
-        private readonly ImageSource[] tileImages2 = new ImageSource[]
-        {
-            new BitmapImage(new Uri("Assets/TileEmpty.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileCyan1.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileBlue1.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileOrange1.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileYellow1.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileGreen1.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TilePurple1.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/TileRed1.png", UriKind.Relative))
-        };
-        private readonly ImageSource[] blockImages1 = new ImageSource[]
-        {
-            new BitmapImage(new Uri("Assets/Block-Empty.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-I.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-J.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-L.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-O.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-S.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-T.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-Z.png", UriKind.Relative)),
-        };
-        private readonly ImageSource[] blockImages2 = new ImageSource[]
-        {
-            new BitmapImage(new Uri("Assets/Block-Empty.png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-I(1).png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-J(1).png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-L(1).png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-O(1).png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-S(1).png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-T(1).png", UriKind.Relative)),
-            new BitmapImage(new Uri("Assets/Block-Z(1).png", UriKind.Relative)),
-        };
+            return fileNames.Select(fileName => new BitmapImage(new Uri(System.IO.Path.Combine(basePath, fileName), UriKind.Relative))).ToArray();
+        }
+        private readonly ImageSource[] tileImages1 = LoadImageSources("Assets", new string[] {
+        "TileEmpty.png",
+        "TileCyan.png",
+        "TileBlue.png",
+        "TileOrange.png",
+        "TileYellow.png",
+        "TileGreen.png",
+        "TilePurple.png",
+        "TileRed.png"
+        });
+        private readonly ImageSource[] tileImages2 = LoadImageSources("Assets", new string[] {
+        "TileEmpty.png",
+        "TileCyan1.png",
+        "TileBlue1.png",
+        "TileOrange1.png",
+        "TileYellow1.png",
+        "TileGreen1.png",
+        "TilePurple1.png",
+        "TileRed1.png"
+        });
+        private readonly ImageSource[] blockImages1 = LoadImageSources("Assets", new string[] {
+        "Block-Empty.png",
+        "Block-I.png",
+        "Block-J.png",
+        "Block-L.png",
+        "Block-O.png",
+        "Block-S.png",
+        "Block-T.png",
+        "Block-Z.png"
+        });
+        private readonly ImageSource[] blockImages2 = LoadImageSources("Assets", new string[] {
+        "Block-Empty.png",
+        "Block-I(1).png",
+        "Block-J(1).png",
+        "Block-L(1).png",
+        "Block-O(1).png",
+        "Block-S(1).png",
+        "Block-T(1).png",
+        "Block-Z(1).png"
+        });
         private readonly Image[,] imageControls;
         private readonly int maxDelay = 500;
         private readonly int minDelay = 100;
         private readonly int delayDecrease = 2;
-        private readonly string backgroundImagePath = ".\\Assets\\tetris_background.png";
-        private readonly string backgroundImage2Path = ".\\Assets\\tetris_background2.png";
+        private readonly string backgroundImagePath = "..\\..\\..\\Assets\\tetris_background.png";
+        private readonly string backgroundImage2Path = "..\\..\\..\\Assets\\tetris_background2.png";
         private readonly string scoreLabelTextEn = "Score:";
         private readonly string scoreLabelTextUa = "Рахунок:";
         private readonly string nextButtonTextEn = "Next";
@@ -104,21 +105,6 @@ namespace Tetris
         private readonly string returnToMenuButtonTextEn = "Return To Menu";
         private readonly string returnToMenuButtonTextUa = "Повернення до меню";
         private GameState gameState = new GameState();
-        
-        private void ChangeFormBackgroundImage()
-        {
-            string imagePath = backgroundImagePath;
-            ImageBrush imageBrush = new ImageBrush();
-            imageBrush.ImageSource = new BitmapImage(new Uri(imagePath));
-            this.Background = imageBrush;
-        }
-        private void ChangeFormBackgroundImage2()
-        {
-            string imagePath1 = backgroundImage2Path;
-            ImageBrush imageBrush1 = new ImageBrush();
-            imageBrush1.ImageSource = new BitmapImage(new Uri(imagePath1));
-            this.Background = imageBrush1;
-        }
         private void InitializeGame()
         {
             InitializeComponent();
@@ -197,7 +183,7 @@ namespace Tetris
         private Block CreateNewBlock()
         {
             BlockType type = (BlockType)new Random().Next(0, 7);
-            return Block.CreateBlock(type);
+            return BlockFactory.CreateBlock(type);
         }
         private void DrawNextBlock(BlockQueue blockQueue)
         {
@@ -211,30 +197,10 @@ namespace Tetris
                 NextImage.Source = blockImages2[next.Id];
             }
         }
-        private void DrawHeldBlock(Block heldBlock) 
+        private void DrawHeldBlock(Block heldBlock)
         {
-            if(heldBlock == null)
-            {
-                if(option.Theme == 0)
-                {
-                    HoldImage.Source = blockImages1[0];
-                }
-                if(option.Theme == 1)
-                {
-                    HoldImage.Source = blockImages2[0];
-                }
-            }
-            else
-            {
-                if(option.Theme == 0)
-                {
-                    HoldImage.Source = blockImages1[heldBlock.Id];
-                }
-                if(option.Theme == 1)
-                {
-                    HoldImage.Source = blockImages2[heldBlock.Id];
-                }
-            }
+            ImageSource[] selectedBlockImages = option.Theme == 0 ? blockImages1 : blockImages2;
+            HoldImage.Source = heldBlock == null ? selectedBlockImages[0] : selectedBlockImages[heldBlock.Id];
         }
         private void DrawGhostBlock(Block block)
         {
@@ -254,38 +220,21 @@ namespace Tetris
         }
         private void Draw(GameState gameState)
         {
-            if(option.Ghost_Block == 0)
+            DrawGrid(gameState.GameGrid);
+            if (option.Ghost_Block == 0)
             {
-                DrawGrid(gameState.GameGrid);
                 DrawGhostBlock(gameState.CurrentBlock);
-                DrawBlock(gameState.CurrentBlock);
-                DrawNextBlock(gameState.BlockQueue);
-                DrawHeldBlock(gameState.HeldBlock);
-                if (option.Language == 0)
-                {
-                    ScoreText.Text = $"{scoreLabelTextEn} {gameState.Score}";
-                }
-                if (option.Language == 1)
-                {
-                    ScoreText.Text = $"{scoreLabelTextUa} {gameState.Score}";
-                }
             }
-            if(option.Ghost_Block == 1)
-            {
-                DrawGrid(gameState.GameGrid);
-                DrawBlock(gameState.CurrentBlock);
-                DrawNextBlock(gameState.BlockQueue);
-                DrawHeldBlock(gameState.HeldBlock);
-                if (option.Language == 0)
-                {
-                    ScoreText.Text = $"{scoreLabelTextEn} {gameState.Score}";
-                }
-                if (option.Language == 1)
-                {
-                    ScoreText.Text = $"{scoreLabelTextUa} {gameState.Score}";
-                }
-            }
-           
+            DrawBlock(gameState.CurrentBlock);
+            DrawNextBlock(gameState.BlockQueue);
+            DrawHeldBlock(gameState.HeldBlock);
+
+            SetScoreLabelText(gameState.Score);
+        }
+        private void SetScoreLabelText(int score)
+        {
+            string labelText = option.Language == 0 ? scoreLabelTextEn : scoreLabelTextUa;
+            ScoreText.Text = $"{labelText} {score}";
         }
         private async Task GameLoop()
         {
@@ -497,19 +446,12 @@ namespace Tetris
                 }
                 sr.Close();
             }
-            if (option.Theme == 0)
-            {
-                Uri imageUri = new Uri(backgroundImagePath);
-                ImageBrush imageBrush = new ImageBrush(new BitmapImage(imageUri));
-                this.Background = imageBrush;
-            }
-            if(option.Theme == 1)
-            {
-                Uri imageUri = new Uri(backgroundImage2Path);
-                ImageBrush imageBrush = new ImageBrush(new BitmapImage(imageUri));
-                this.Background = imageBrush;
-            }
-            if(option.Language == 0)
+            string imagePath = option.Theme == 0 ? backgroundImagePath : backgroundImage2Path;
+            string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, imagePath);
+            Uri imageUri = new Uri(fullPath, UriKind.Absolute);
+            ImageBrush imageBrush = new ImageBrush(new BitmapImage(imageUri));
+            this.Background = imageBrush;
+            if (option.Language == 0)
             {
                 ScoreText.Text = scoreLabelTextEn;
                 Next.Text = nextButtonTextEn;

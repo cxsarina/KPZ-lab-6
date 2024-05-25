@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TetrisLibrary
 {
-    public class BlockFactory
+    public static class BlockFactory
     {
-        public Block CreateBlock(BlockType type)
+        public static Block CreateBlock(BlockType type)
         {
             switch (type)
             {
