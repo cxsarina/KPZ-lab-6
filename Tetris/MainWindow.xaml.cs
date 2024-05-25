@@ -239,218 +239,128 @@ namespace Tetris
         private async Task GameLoop()
         {
             gameState.CurrentBlock = CreateNewBlock();
-
             Draw(gameState);
+
             while (!gameState.GameOver)
             {
-                if (option.Difficult == 0)
-                {
-                    delay = Math.Max(minDelay, maxDelay - (gameState.Score / 3));
-                }
-                if (option.Difficult == 1)
-                {
-                    delay = Math.Max(minDelay, maxDelay - gameState.Score);
-                }
-                if (option.Difficult == 2)
-                {
-                    delay = Math.Max(minDelay, maxDelay - (gameState.Score * delayDecrease));
-                }
+                delay = CalculateDelay(option.Difficult, gameState.Score);
                 await Task.Delay(delay);
                 gameState.MoveBlockDown();
                 Draw(gameState);
             }
+
             GameOverMenu.Visibility = Visibility.Visible;
-            if (option.Language == 0)
+            UpdateFinalScoreText(option.Language, gameState.Score);
+
+            var difficulty = (Difficulty)option.Difficult;
+            users = UpdateUserScores(users, difficulty, gameState.Score);
+
+            SaveUserScores(filePath, userList, users);
+            GameOver.Text = GetGameOverText(option.Language);
+        }
+
+        private int CalculateDelay(int difficulty, int score)
+        {
+            int baseDelay = 1000;
+            int minDelay = 100;
+            double delayDecrease = 0.1;
+
+            return difficulty switch
             {
-                FinalScoreText.Text = $"{scoreLabelTextEn}  {gameState.Score}";
-                if(option.Difficult == 0 ) 
-                {
-                    users.Score_Easy = gameState.Score;
-                    bool userFound = false;
-                    foreach (User user in userList)
-                    {
-                        if (user.Name == users.Name)
-                        {
-                            if(users.Score_Easy > user.Score_Easy)
-                            {
-                                user.Score_Easy = users.Score_Easy;
-                            }
-                            userFound = true;
-                        }
-                        updatedUserList.Add(user);
-                    }
-                    if (!userFound)
-                    {
-                        updatedUserList.Add(users);
-                    }
-                    using (StreamWriter sw = new StreamWriter(filePath,false))
-                    {
-                        foreach (User user in updatedUserList)
-                        {
-                            string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
-                            sw.WriteLine(line);
-                        }
-                        sw.Close();
-                    }
-                }
-                else if( option.Difficult == 1 )
-                {
-                    users.Score_Normal = gameState.Score;
-                    bool userFound = false;
-                    foreach (User user in userList)
-                    {
-                        if (user.Name == users.Name)
-                        {
-                            if (users.Score_Normal > user.Score_Normal)
-                            {
-                                user.Score_Normal = users.Score_Normal;
-                            }
-                            userFound = true;
-                        }
-                        updatedUserList.Add(user);
-                    }
-                    if (!userFound)
-                    {
-                        updatedUserList.Add(users);
-                    }
-                    using (StreamWriter sw = new StreamWriter(filePath, false))
-                    {
-                        foreach (User user in updatedUserList)
-                        {
-                            string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
-                            sw.WriteLine(line);
-                        }
-                        sw.Close();
-                    }
-                }
-                else if( option.Difficult == 2)
-                {
-                    users.Score_Hard = gameState.Score;
-                    bool userFound = false;
-                    foreach (User user in userList)
-                    {
-                        if (user.Name == users.Name)
-                        {
-                            if (users.Score_Hard > user.Score_Hard)
-                            {
-                                user.Score_Hard = users.Score_Hard;
-                            }
-                            userFound = true;
-                        }
-                        updatedUserList.Add(user);
-                    }
-                    if (!userFound)
-                    {
-                        updatedUserList.Add(users);
-                    }
-                    using (StreamWriter sw = new StreamWriter(filePath, false))
-                    {
-                        foreach (User user in updatedUserList)
-                        {
-                            string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
-                            sw.WriteLine(line);
-                        }
-                        sw.Close();
-                    }
-                }
-                GameOver.Text = "Game Over";
-            }
-            if (option.Language == 1)
+                0 => Math.Max(minDelay, baseDelay - (score / 3)),
+                1 => Math.Max(minDelay, baseDelay - score),
+                2 => Math.Max(minDelay, baseDelay - (int)(score * delayDecrease)),
+                _ => baseDelay,
+            };
+        }
+
+        private void UpdateFinalScoreText(int language, int score)
+        {
+            if (language == 0)
             {
-                FinalScoreText.Text = $"{scoreLabelTextUa}  {gameState.Score}";
-                if (option.Difficult == 0)
-                {
-                    users.Score_Easy = gameState.Score;
-                    bool userFound = false;
-                    foreach (User user in userList)
-                    {
-                        if (user.Name == users.Name)
-                        {
-                            if (users.Score_Easy > user.Score_Easy)
-                            {
-                                user.Score_Easy = users.Score_Easy;
-                            }
-                            userFound = true;
-                        }
-                        updatedUserList.Add(user);
-                    }
-                    if (!userFound)
-                    {
-                        updatedUserList.Add(users);
-                    }
-                    using (StreamWriter sw = new StreamWriter(filePath, false))
-                    {
-                        foreach (User user in updatedUserList)
-                        {
-                            string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
-                            sw.WriteLine(line);
-                        }
-                        sw.Close();
-                    }
-                }
-                else if (option.Difficult == 1)
-                {
-                    users.Score_Normal = gameState.Score;
-                    bool userFound = false;
-                    foreach (User user in userList)
-                    {
-                        if (user.Name == users.Name)
-                        {
-                            if (users.Score_Normal > user.Score_Normal)
-                            {
-                                user.Score_Normal = users.Score_Normal;
-                            }
-                            userFound = true;
-                        }
-                        updatedUserList.Add(user);
-                    }
-                    if (!userFound)
-                    {
-                        updatedUserList.Add(users);
-                    }
-                    using (StreamWriter sw = new StreamWriter(filePath, false))
-                    {
-                        foreach (User user in updatedUserList)
-                        {
-                            string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
-                            sw.WriteLine(line);
-                        }
-                        sw.Close();
-                    }
-                }
-                else if (option.Difficult == 2)
-                {
-                    users.Score_Hard = gameState.Score;
-                    bool userFound = false;
-                    foreach (User user in userList)
-                    {
-                        if (user.Name == users.Name)
-                        {
-                            if (users.Score_Hard > user.Score_Hard)
-                            {
-                                user.Score_Hard = users.Score_Hard;
-                            }
-                            userFound = true;
-                        }
-                        updatedUserList.Add(user);
-                    }
-                    if (!userFound)
-                    {
-                        updatedUserList.Add(users);
-                    }
-                    using (StreamWriter sw = new StreamWriter(filePath, false))
-                    {
-                        foreach (User user in updatedUserList)
-                        {
-                            string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
-                            sw.WriteLine(line);
-                        }
-                        sw.Close();
-                    }
-                }
-                GameOver.Text = "Ви програли!";
+                FinalScoreText.Text = $"{scoreLabelTextEn} {score}";
             }
-            
+            else if (language == 1)
+            {
+                FinalScoreText.Text = $"{scoreLabelTextUa} {score}";
+            }
+        }
+
+        private User UpdateUserScores(User user, Difficulty difficulty, int score)
+        {
+            bool userFound = false;
+
+            foreach (var existingUser in userList)
+            {
+                if (existingUser.Name == user.Name)
+                {
+                    switch (difficulty)
+                    {
+                        case Difficulty.Easy:
+                            existingUser.Score_Easy = Math.Max(existingUser.Score_Easy, score);
+                            break;
+                        case Difficulty.Normal:
+                            existingUser.Score_Normal = Math.Max(existingUser.Score_Normal, score);
+                            break;
+                        case Difficulty.Hard:
+                            existingUser.Score_Hard = Math.Max(existingUser.Score_Hard, score);
+                            break;
+                    }
+
+                    userFound = true;
+                }
+
+                updatedUserList.Add(existingUser);
+            }
+
+            if (!userFound)
+            {
+                switch (difficulty)
+                {
+                    case Difficulty.Easy:
+                        user.Score_Easy = score;
+                        break;
+                    case Difficulty.Normal:
+                        user.Score_Normal = score;
+                        break;
+                    case Difficulty.Hard:
+                        user.Score_Hard = score;
+                        break;
+                }
+
+                updatedUserList.Add(user);
+            }
+
+            return user;
+        }
+
+        private void SaveUserScores(string filePath, List<User> userList, User updatedUser)
+        {
+            using (var sw = new StreamWriter(filePath, false))
+            {
+                foreach (var user in updatedUserList)
+                {
+                    string line = $"{user.Name},{user.Score_Easy},{user.Score_Normal},{user.Score_Hard}";
+                    sw.WriteLine(line);
+                }
+            }
+        }
+
+        private string GetGameOverText(int language)
+        {
+            return language switch
+            {
+                0 => "Game Over",
+                1 => "Ви програли!",
+                _ => "Game Over"
+            };
+        }
+
+        private enum Difficulty
+        {
+            Easy,
+            Normal,
+            Hard
         }
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
@@ -473,7 +383,7 @@ namespace Tetris
                     gameState.RotateBlockCW();
                     break;
                 case Key.Z:
-                    gameState.RotateBlockCWW();
+                    gameState.RotateBlockCW();
                     break;
                 case Key.C:
                     gameState.HoldBlock();
