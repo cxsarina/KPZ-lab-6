@@ -3,28 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TetrisLibrary.Blocks;
 
 namespace TetrisLibrary
 {
     public class BlockQueue
     {
-        private readonly Block[] blocks = new Block[]
+        private readonly IFigure[] blocks = new IFigure[]
         {
             new IBlock(), new JBlock(), new LBlock(), new OBlock(), new SBlock(), new TBlock(), new ZBlock()
         };
         private readonly Random random = new Random();
-        public Block NextBlock { get; private set; }
+        public IFigure NextBlock { get; private set; }
         public BlockQueue()
         {
             NextBlock = RandomBlock();
         }
-        private Block RandomBlock()
+        private IFigure RandomBlock()
         {
             return blocks[random.Next(blocks.Length)];
         }
-        public Block GetAndUpdate()
+        public IFigure GetAndUpdate()
         {
-            Block block = NextBlock;
+            IFigure block = NextBlock;
             do
             {
                 NextBlock = RandomBlock();

@@ -3,24 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TetrisLibrary.Blocks;
 
 namespace TetrisLibrary
 {
     public static class BlockFactory
     {
-        public static Block CreateBlock(BlockType type)
+        private static readonly Dictionary<BlockType, Func<IFigure>> blockCreators = new Dictionary<BlockType, Func<IFigure>>
         {
-            switch (type)
+            { BlockType.I, () => new IBlock() },
+            { BlockType.J, () => new JBlock() },
+            { BlockType.L, () => new LBlock() },
+            { BlockType.O, () => new OBlock() },
+            { BlockType.S, () => new SBlock() },
+            { BlockType.T, () => new TBlock() },
+            { BlockType.Z, () => new ZBlock() }
+        };
+
+        public static IFigure CreateBlock(BlockType type)
+        {
+            if (blockCreators.ContainsKey(type))
             {
-                case BlockType.I: return new IBlock();
-                case BlockType.J: return new JBlock();
-                case BlockType.L: return new LBlock();
-                case BlockType.O: return new OBlock();
-                case BlockType.S: return new SBlock();
-                case BlockType.T: return new TBlock();
-                case BlockType.Z: return new ZBlock();
-                default: throw new ArgumentException("Invalid block type");
+                return blockCreators[type]();
             }
+            throw new ArgumentException("Invalid block type");
         }
     }
 }

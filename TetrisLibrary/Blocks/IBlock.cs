@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TetrisLibrary
+namespace TetrisLibrary.Blocks
 {
-    public class IBlock : Block
+    public class IBlock : Block, IFigure
     {
         private readonly Position[][] tiles = new Position[][]
         {
@@ -16,7 +16,7 @@ namespace TetrisLibrary
             new Position[] {new(0,1),new(1,1),new(2,1),new(3,1)}
         };
         public override int Id => 1;
-        protected override Position StartOffset => new Position(-1,3);
+        protected override Position StartOffset => new Position(-1, 3);
         protected override Position[][] Tiles => tiles;
     }
 }

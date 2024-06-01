@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TetrisLibrary
 {
-    public abstract class Block
+    public abstract class Block : IFigure
     {
         protected abstract Position[][] Tiles { get; }
         protected abstract Position StartOffset { get; }
@@ -20,10 +20,7 @@ namespace TetrisLibrary
 
         public IEnumerable<Position> TilePositions()
         {
-            foreach (Position p in Tiles[rotationState])
-            {
-                yield return new Position(p.Row + offset.Row, p.Column + offset.Column);
-            }
+            return Tiles[rotationState].Select(p => new Position(p.Row + offset.Row, p.Column + offset.Column));
         }
 
         public void RotateCW()
@@ -33,14 +30,7 @@ namespace TetrisLibrary
 
         public void RotateCCW()
         {
-            if (rotationState == 0)
-            {
-                rotationState = Tiles.Length - 1;
-            }
-            else
-            {
-                rotationState--;
-            }
+            rotationState = rotationState == 0 ? Tiles.Length - 1 : rotationState - 1;
         }
 
         public void Move(int rows, int columns)
