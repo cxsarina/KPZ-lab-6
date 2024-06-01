@@ -14,7 +14,7 @@ namespace TetrisLibrary
         public int Score_Hard { get; set; }
         public User() 
         {
-            Name = "";
+            Name = string.Empty;
             Score_Easy = 0;
             Score_Normal = 0;
             Score_Hard = 0;

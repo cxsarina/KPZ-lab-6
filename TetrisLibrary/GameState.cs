@@ -9,15 +9,16 @@ namespace TetrisLibrary
 {
     public class GameState
     {
-        private readonly List<IGameObserver> observers = new List<IGameObserver>();
-        private Block currentBlock;
+        private IFigure currentBlock;
         public GameGrid GameGrid { get; }
         public BlockQueue BlockQueue { get; }
         public bool GameOver { get; private set; }
         public int Score { get; private set; }
-        public Block HeldBlock { get; private set; }
+        public IFigure HeldBlock { get; private set; }
         public bool CanHold { get; private set; }
-        public Block CurrentBlock
+        public event Action RoundStartedEvent;
+        public event Action GameOverEvent;
+        public IFigure CurrentBlock
         {
             get => currentBlock;
             set
@@ -40,33 +41,6 @@ namespace TetrisLibrary
             BlockQueue = new BlockQueue();
             CurrentBlock = BlockQueue.GetAndUpdate();
             CanHold = true;
-        }
-        public void Attach(IGameObserver observer)
-        {
-            if (observer == null) throw new ArgumentNullException(nameof(observer));
-            observers.Add(observer);
-        }
-
-        public void Detach(IGameObserver observer)
-        {
-            if (observer == null) throw new ArgumentNullException(nameof(observer));
-            observers.Remove(observer);
-        }
-
-        public void NotifyRoundStarted()
-        {
-            foreach (var observer in observers)
-            {
-                observer.RoundStarted();
-            }
-        }
-
-        public void NotifyGameOver()
-        {
-            foreach (var observer in observers)
-            {
-                observer.GameOver();
-            }
         }
 
         private bool BlockFits()
@@ -172,12 +146,13 @@ namespace TetrisLibrary
             if (IsGameOver())
             {
                 GameOver = true;
-                NotifyGameOver();
+                GameOverEvent?.Invoke();
             }
             else
             {
                 CurrentBlock = BlockQueue.GetAndUpdate();
                 CanHold = true;
+                RoundStartedEvent?.Invoke();
             }
         }
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TetrisLibrary
+namespace TetrisLibrary.Blocks
 {
-    public class SBlock : Block
+    public class SBlock : Block, IFigure
     {
         private readonly Position[][] tiles = new Position[][]
         {

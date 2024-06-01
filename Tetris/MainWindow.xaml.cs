@@ -14,13 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TetrisLibrary;
+using TetrisLibrary.Constants;
 
 namespace Tetris
 {
     public partial class MainWindow : Window
     {
         private static MainWindow instance;
-        public static MainWindow Instance 
+        public static MainWindow Instance
         {
             get
             {
@@ -31,7 +32,7 @@ namespace Tetris
                 return instance;
             }
         }
-       
+
         public List<User> userList = new List<User>();
         public string filePath = "..\\..\\..\\..\\ScoreTable.txt";
         public List<User> updatedUserList = new List<User>();
@@ -44,6 +45,7 @@ namespace Tetris
         {
             return fileNames.Select(fileName => new BitmapImage(new Uri(System.IO.Path.Combine(basePath, fileName), UriKind.Relative))).ToArray();
         }
+
         private readonly ImageSource[] tileImages1 = LoadImageSources("Assets", new string[] {
         "TileEmpty.png",
         "TileCyan.png",
@@ -53,7 +55,8 @@ namespace Tetris
         "TileGreen.png",
         "TilePurple.png",
         "TileRed.png"
-        });
+    });
+
         private readonly ImageSource[] tileImages2 = LoadImageSources("Assets", new string[] {
         "TileEmpty.png",
         "TileCyan1.png",
@@ -63,7 +66,8 @@ namespace Tetris
         "TileGreen1.png",
         "TilePurple1.png",
         "TileRed1.png"
-        });
+    });
+
         private readonly ImageSource[] blockImages1 = LoadImageSources("Assets", new string[] {
         "Block-Empty.png",
         "Block-I.png",
@@ -73,7 +77,8 @@ namespace Tetris
         "Block-S.png",
         "Block-T.png",
         "Block-Z.png"
-        });
+    });
+
         private readonly ImageSource[] blockImages2 = LoadImageSources("Assets", new string[] {
         "Block-Empty.png",
         "Block-I(1).png",
@@ -83,39 +88,28 @@ namespace Tetris
         "Block-S(1).png",
         "Block-T(1).png",
         "Block-Z(1).png"
-        });
+    });
+
         private readonly Image[,] imageControls;
-        private readonly int maxDelay = 500;
-        private readonly int minDelay = 100;
-        private readonly int delayDecrease = 2;
-        private readonly string backgroundImagePath = "..\\..\\..\\Assets\\tetris_background.png";
-        private readonly string backgroundImage2Path = "..\\..\\..\\Assets\\tetris_background2.png";
-        private readonly string scoreLabelTextEn = "Score:";
-        private readonly string scoreLabelTextUa = "Рахунок:";
-        private readonly string nextButtonTextEn = "Next";
-        private readonly string nextButtonTextUa = "Наступна";
-        private readonly string holdButtonTextEn = "Hold";
-        private readonly string holdButtonTextUa = "Утримувати";
-        private readonly string finalScoreLabelTextEn = "Score:";
-        private readonly string finalScoreLabelTextUa = "Рахунок:";
-        private readonly string playAgainButtonTextEn = "Play Again";
-        private readonly string playAgainButtonTextUa = "Спробувати ще раз";
-        private readonly string highScoreTableButtonTextEn = "High Score Table";
-        private readonly string highScoreTableButtonTextUa = "Рекордна Таблиця";
-        private readonly string returnToMenuButtonTextEn = "Return To Menu";
-        private readonly string returnToMenuButtonTextUa = "Повернення до меню";
-        private GameState gameState = new GameState();
+        private GameState gameState;
+
         private void InitializeGame()
         {
             InitializeComponent();
             WindowState = WindowState.Maximized;
         }
+
         private MainWindow()
         {
-            instance = this; 
+            instance = this;
             InitializeGame();
+            gameState = new GameState();
+            gameState.RoundStartedEvent += OnRoundStarted;
+            gameState.GameOverEvent += OnGameOver;
+
             imageControls = SetupGameCanvas(gameState.GameGrid);
         }
+
         public static MainWindow GetInstance()
         {
             if (instance == null)
@@ -124,13 +118,14 @@ namespace Tetris
             }
             return instance;
         }
+
         private Image[,] SetupGameCanvas(GameGrid grid)
         {
             Image[,] imageControls = new Image[grid.Rows, grid.Columns];
             int cellSize = 25;
-            for(int r = 0; r < grid.Rows; r++)
+            for (int r = 0; r < grid.Rows; r++)
             {
-                for(int c = 0; c < grid.Columns; c++)
+                for (int c = 0; c < grid.Columns; c++)
                 {
                     Image imageControl = new Image
                     {
@@ -145,79 +140,57 @@ namespace Tetris
             }
             return imageControls;
         }
+
         private void DrawGrid(GameGrid grid)
         {
-            for(int r = 0; r < grid.Rows; r++)
+            for (int r = 0; r < grid.Rows; r++)
             {
-                for(int c = 0; c < grid.Columns; c++)
+                for (int c = 0; c < grid.Columns; c++)
                 {
                     int id = grid[r, c];
-                    imageControls[r,c].Opacity = 1;
-                    if(option.Theme == 0)
-                    {
-                      imageControls[r, c].Source = tileImages1[id];
-                    }
-                    if(option.Theme == 1)
-                    {
-                      imageControls[r, c].Source = tileImages2[id];
-                    }
-
+                    imageControls[r, c].Opacity = 1;
+                    imageControls[r, c].Source = option.Theme == 0 ? tileImages1[id] : tileImages2[id];
                 }
             }
         }
-        private void DrawBlock(Block block)
+
+        private void DrawBlock(IFigure block)
         {
             foreach (Position p in block.TilePositions())
             {
                 imageControls[p.Row, p.Column].Opacity = 1;
-                if (option.Theme == 0)
-                {
-                    imageControls[p.Row, p.Column].Source = tileImages1[block.Id];
-                }
-                if (option.Theme == 1)
-                {
-                    imageControls[p.Row, p.Column].Source = tileImages2[block.Id];
-                }
+                imageControls[p.Row, p.Column].Source = option.Theme == 0 ? tileImages1[block.Id] : tileImages2[block.Id];
             }
         }
-        private Block CreateNewBlock()
+
+        private IFigure CreateNewBlock()
         {
             BlockType type = (BlockType)new Random().Next(0, 7);
             return BlockFactory.CreateBlock(type);
         }
+
         private void DrawNextBlock(BlockQueue blockQueue)
         {
-            Block next = blockQueue.NextBlock;
-            if(option.Theme == 0)
-            {
-                NextImage.Source = blockImages1[next.Id];
-            }
-            if (option.Theme == 1)
-            {
-                NextImage.Source = blockImages2[next.Id];
-            }
+            IFigure next = blockQueue.NextBlock;
+            NextImage.Source = option.Theme == 0 ? blockImages1[next.Id] : blockImages2[next.Id];
         }
-        private void DrawHeldBlock(Block heldBlock)
+
+        private void DrawHeldBlock(IFigure heldBlock)
         {
             ImageSource[] selectedBlockImages = option.Theme == 0 ? blockImages1 : blockImages2;
             HoldImage.Source = heldBlock == null ? selectedBlockImages[0] : selectedBlockImages[heldBlock.Id];
         }
-        private void DrawGhostBlock(Block block)
+
+        private void DrawGhostBlock(IFigure block)
         {
             int dropDistance = gameState.BlockDropDistance();
-            foreach(Position p in block.TilePositions())
+            foreach (Position p in block.TilePositions())
             {
                 imageControls[p.Row + dropDistance, p.Column].Opacity = 0.25;
-                if(option.Theme == 0)
-                {
-                    imageControls[p.Row + dropDistance, p.Column].Source = tileImages1[block.Id];
-                }
-                if(option.Theme == 1)
-                {
-                    imageControls[p.Row + dropDistance, p.Column].Source = tileImages2[block.Id];
-                }
+                imageControls[p.Row + dropDistance, p.Column].Source = option.Theme == 0 ? tileImages1[block.Id] : tileImages2[block.Id];
             }
         }
+
         private void Draw(GameState gameState)
         {
             DrawGrid(gameState.GameGrid);
@@ -228,14 +201,15 @@ namespace Tetris
             DrawBlock(gameState.CurrentBlock);
             DrawNextBlock(gameState.BlockQueue);
             DrawHeldBlock(gameState.HeldBlock);
-
             SetScoreLabelText(gameState.Score);
         }
+
         private void SetScoreLabelText(int score)
         {
-            string labelText = option.Language == 0 ? scoreLabelTextEn : scoreLabelTextUa;
+            string labelText = option.Language == 0 ? Constants.ScoreLabelTextEn : Constants.ScoreLabelTextUa;
             ScoreText.Text = $"{labelText} {score}";
         }
+
         private async Task GameLoop()
         {
             gameState.CurrentBlock = CreateNewBlock();
@@ -262,28 +236,20 @@ namespace Tetris
         private int CalculateDelay(int difficulty, int score)
         {
             int baseDelay = 1000;
-            int minDelay = 100;
             double delayDecrease = 0.1;
 
             return difficulty switch
             {
-                0 => Math.Max(minDelay, baseDelay - (score / 3)),
-                1 => Math.Max(minDelay, baseDelay - score),
-                2 => Math.Max(minDelay, baseDelay - (int)(score * delayDecrease)),
+                0 => Math.Max(Constants.MinDelay, baseDelay - (score / 3)),
+                1 => Math.Max(Constants.MinDelay, baseDelay - score),
+                2 => Math.Max(Constants.MinDelay, baseDelay - (int)(score * delayDecrease)),
                 _ => baseDelay,
             };
         }
 
         private void UpdateFinalScoreText(int language, int score)
         {
-            if (language == 0)
-            {
-                FinalScoreText.Text = $"{scoreLabelTextEn} {score}";
-            }
-            else if (language == 1)
-            {
-                FinalScoreText.Text = $"{scoreLabelTextUa} {score}";
-            }
+            FinalScoreText.Text = language == 0 ? $"{Constants.FinalScoreLabelTextEn} {score}" : $"{Constants.FinalScoreLabelTextUa} {score}";
         }
 
         private User UpdateUserScores(User user, Difficulty difficulty, int score)
@@ -348,12 +314,7 @@ namespace Tetris
 
         private string GetGameOverText(int language)
         {
-            return language switch
-            {
-                0 => "Game Over",
-                1 => "Ви програли!",
-                _ => "Game Over"
-            };
+            return language == 0 ? "Game Over" : "Ви програли!";
         }
 
         private enum Difficulty
@@ -362,6 +323,7 @@ namespace Tetris
             Normal,
             Hard
         }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (gameState.GameOver)
@@ -405,6 +367,8 @@ namespace Tetris
         private async void PlayAgain_Click(object sender, RoutedEventArgs e)
         {
             gameState = new GameState();
+            gameState.RoundStartedEvent += OnRoundStarted;
+            gameState.GameOverEvent += OnGameOver;
             GameOverMenu.Visibility = Visibility.Hidden;
             await GameLoop();
         }
@@ -440,37 +404,42 @@ namespace Tetris
                         int score_easy = Convert.ToInt32(parts[1]);
                         int score_normal = Convert.ToInt32(parts[2]);
                         int score_hard = Convert.ToInt32(parts[3]);
-                        User user = new User {Name = name, Score_Easy = score_easy, Score_Normal = score_normal , Score_Hard = score_hard};
+                        User user = new User { Name = name, Score_Easy = score_easy, Score_Normal = score_normal, Score_Hard = score_hard };
                         userList.Add(user);
                     }
                 }
-                sr.Close();
             }
-            string imagePath = option.Theme == 0 ? backgroundImagePath : backgroundImage2Path;
+
+            string imagePath = option.Theme == 0 ? Constants.BackgroundImagePath : Constants.BackgroundImage2Path;
             string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, imagePath);
             Uri imageUri = new Uri(fullPath, UriKind.Absolute);
             ImageBrush imageBrush = new ImageBrush(new BitmapImage(imageUri));
             this.Background = imageBrush;
-            if (option.Language == 0)
-            {
-                ScoreText.Text = scoreLabelTextEn;
-                Next.Text = nextButtonTextEn;
-                Hold.Text = holdButtonTextEn;
-                FinalScoreText.Text = finalScoreLabelTextEn;
-                PlayAgain.Content = playAgainButtonTextEn;
-                HighScoreTable.Content = highScoreTableButtonTextEn;
-                ReturnToMenu.Content = returnToMenuButtonTextEn;
-            }
-            if(option.Language == 1)
-            {
-                ScoreText.Text = scoreLabelTextUa;
-                Next.Text = nextButtonTextUa;
-                Hold.Text = holdButtonTextUa;
-                FinalScoreText.Text = finalScoreLabelTextUa;
-                PlayAgain.Content = playAgainButtonTextUa;
-                HighScoreTable.Content = highScoreTableButtonTextUa;
-                ReturnToMenu.Content = returnToMenuButtonTextUa;
-            }
+
+            ScoreText.Text = option.Language == 0 ? Constants.ScoreLabelTextEn : Constants.ScoreLabelTextUa;
+            Next.Text = option.Language == 0 ? Constants.NextButtonTextEn : Constants.NextButtonTextUa;
+            Hold.Text = option.Language == 0 ? Constants.HoldButtonTextEn : Constants.HoldButtonTextUa;
+            FinalScoreText.Text = option.Language == 0 ? Constants.FinalScoreLabelTextEn : Constants.FinalScoreLabelTextUa;
+            PlayAgain.Content = option.Language == 0 ? Constants.PlayAgainButtonTextEn : Constants.PlayAgainButtonTextUa;
+            HighScoreTable.Content = option.Language == 0 ? Constants.HighScoreTableButtonTextEn : Constants.HighScoreTableButtonTextUa;
+            ReturnToMenu.Content = option.Language == 0 ? Constants.ReturnToMenuButtonTextEn : Constants.ReturnToMenuButtonTextUa;
+        }
+
+        private void OnRoundStarted()
+        {
+            Draw(gameState);
+        }
+
+        private void OnGameOver()
+        {
+            GameOverMenu.Visibility = Visibility.Visible;
+            UpdateFinalScoreText(option.Language, gameState.Score);
+
+            Difficulty difficulty = (Difficulty)option.Difficult;
+            users = UpdateUserScores(users, difficulty, gameState.Score);
+
+            SaveUserScores(filePath, userList, users);
+            GameOver.Text = GetGameOverText(option.Language);
         }
     }
 }
