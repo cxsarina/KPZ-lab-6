@@ -18,6 +18,11 @@ namespace TetrisLibrary
             Columns = columns;
             grid = new int[rows, columns];
         }
+        public static GameGrid CreateGrid(int rows, int columns)
+        {
+            return new GameGrid(rows, columns);
+        }
+
         public bool IsInside(int r, int c)
         {
             return r >= 0 && r < Rows && c >= 0 && c < Columns;

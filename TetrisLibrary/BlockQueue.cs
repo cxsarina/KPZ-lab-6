@@ -34,5 +34,16 @@ namespace TetrisLibrary
 
             return block;
         }
+        private readonly Func<IFigure>[] blockCreators = new Func<IFigure>[]
+        {
+            () => BlockFactory.CreateBlock(BlockType.I),
+            () => BlockFactory.CreateBlock(BlockType.J),
+            () => BlockFactory.CreateBlock(BlockType.L),
+            () => BlockFactory.CreateBlock(BlockType.O),
+            () => BlockFactory.CreateBlock(BlockType.S),
+            () => BlockFactory.CreateBlock(BlockType.T),
+            () => BlockFactory.CreateBlock(BlockType.Z)
+        };
+
     }
 }

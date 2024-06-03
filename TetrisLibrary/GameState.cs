@@ -13,7 +13,7 @@ namespace TetrisLibrary
         public GameGrid GameGrid { get; }
         public BlockQueue BlockQueue { get; }
         public bool GameOver { get; private set; }
-        public int Score { get; private set; }
+        public int Score { get; protected set; }
         public IFigure HeldBlock { get; private set; }
         public bool CanHold { get; private set; }
         public event Action RoundStartedEvent;
@@ -74,16 +74,6 @@ namespace TetrisLibrary
             CanHold = false;
         }
 
-        public void RotateBlockCW()
-        {
-            RotateBlock(() => CurrentBlock.RotateCW(), () => CurrentBlock.RotateCCW());
-        }
-
-        public void RotateBlockCCW()
-        {
-            RotateBlock(() => CurrentBlock.RotateCCW(), () => CurrentBlock.RotateCW());
-        }
-
         public void MoveBlockLeft()
         {
             MoveBlock(0, -1);
@@ -110,6 +100,16 @@ namespace TetrisLibrary
             PlaceBlock();
         }
 
+        private void RotateBlockCW()
+        {
+            RotateBlock(CurrentBlock.RotateCW, CurrentBlock.RotateCCW);
+        }
+
+        private void RotateBlockCCW()
+        {
+            RotateBlock(CurrentBlock.RotateCCW, CurrentBlock.RotateCW);
+        }
+
         private void RotateBlock(Action rotate, Action undoRotate)
         {
             rotate();
@@ -118,6 +118,7 @@ namespace TetrisLibrary
                 undoRotate();
             }
         }
+
 
         private void MoveBlock(int rowOffset, int colOffset)
         {
