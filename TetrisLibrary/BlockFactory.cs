@@ -22,11 +22,12 @@ namespace TetrisLibrary
 
         public static IFigure CreateBlock(BlockType type)
         {
-            if (blockCreators.ContainsKey(type))
+            if (Enum.IsDefined(typeof(BlockType), type))
             {
                 return blockCreators[type]();
             }
             throw new ArgumentException("Invalid block type");
         }
+
     }
 }
